@@ -29,9 +29,9 @@ public class PlayerController {
         } else if (team != null) {
             return playerService.getPlayersFromTeam(team);
         } else if (position != null) {
-            return playerService.getPlayersFromTeam(position);
+            return playerService.getPlayersByPos(position);
         } else if (nation != null) {
-            return playerService.getPlayersFromTeam(nation);
+            return playerService.getPlayersByNation(nation);
         } else {
             return playerService.getPlayers();
         }
