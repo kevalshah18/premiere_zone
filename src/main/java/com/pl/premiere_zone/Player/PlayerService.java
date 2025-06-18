@@ -49,10 +49,22 @@ public class PlayerService {
         Optional<Player> existingPlayer = playerRepository.findByPlayer(updatedPlayer.getPlayer());
         if(existingPlayer.isPresent()){
             Player playerToUpdate = existingPlayer.get();
+
             playerToUpdate.setPlayer((updatedPlayer.getPlayer()));
-            playerToUpdate.setTeam((updatedPlayer.getTeam()));
-            playerToUpdate.setPos((updatedPlayer.getPos()));
             playerToUpdate.setNation((updatedPlayer.getNation()));
+            playerToUpdate.setPos((updatedPlayer.getPos()));
+            playerToUpdate.setAge(updatedPlayer.getAge());
+            playerToUpdate.setMp(updatedPlayer.getMp());
+            playerToUpdate.setStarts(updatedPlayer.getStarts());
+            playerToUpdate.setMin(updatedPlayer.getMin());
+            playerToUpdate.setGls(updatedPlayer.getGls());
+            playerToUpdate.setAst(updatedPlayer.getAst());
+            playerToUpdate.setPk(updatedPlayer.getPk());
+            playerToUpdate.setCrdY(updatedPlayer.getCrdY());
+            playerToUpdate.setCrdR(updatedPlayer.getCrdR());
+            playerToUpdate.setxG(updatedPlayer.getxG());
+            playerToUpdate.setxAG(updatedPlayer.getxAG());
+            playerToUpdate.setTeam((updatedPlayer.getTeam()));
 
             playerRepository.save(playerToUpdate);
             return playerToUpdate;
