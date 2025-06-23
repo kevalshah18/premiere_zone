@@ -1,171 +1,141 @@
 package com.pl.premiere_zone.Player;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+import jakarta.validation.constraints.*;
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
+import java.time.LocalDateTime;
+import java.util.UUID;
 
 @Entity
-@Table(name="prem_stats")
-public class Player {
-    public Player() {
-
-    }
+@Table(name="prem_stats",indexes = {
+        @Index(name="idx_team",columnList = "team"),
+        @Index(name="idx_position", columnList = "pos"),
+        @Index(name="idx_nation",columnList = "nation"),
+        @Index(name="idx_player_name",columnList = "player")
+})
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
+public class Player{
     @Id
-    @Column(name ="Player",unique = true)
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    private UUID id;
+
+    @Column(name ="Player",nullable = false,unique = true)
+    @NotBlank(message = "Player name cannot be blank")
+    @Size(min=2,max=100,message = "Player name must be between 2 and 100 characters")
     private String player;
-    
+
+    @Column(name="nation",nullable = false)
+    @NotBlank(message = "Player name cannot be blank")
+    @Size(max=50)
     private String nation;
+
+    @Column(name = "pos", nullable = false)
+    @NotBlank(message = "Position cannot be blank")
+    @Pattern(regexp = "^(GK|DF|MF|FW|DF,MF|MF,FW|MF,DF)$",
+            message = "Position must be valid football position")
     private String pos;
+
+    @Column(name = "age")
+    @Min(value = 16, message = "Age must be at least 16")
+    @Max(value = 50, message = "Age cannot exceed 50")
     private Integer age;
+
+    @Column(name = "mp")
+    @Min(value = 0, message = "Matches played cannot be negative")
     private Integer mp;
+
+    @Column(name = "starts")
+    @Min(value = 0, message = "Starts cannot be negative")
     private Integer starts;
+
+    @Column(name = "min")
+    @DecimalMin(value = "0.0", message = "Minutes played cannot be negative")
     private Double min;
+
+    @Column(name = "gls")
+    @DecimalMin(value = "0.0", message = "Goals cannot be negative")
     private Double gls;
+
+    @Column(name = "ast")
+    @DecimalMin(value = "0.0", message = "Assists cannot be negative")
     private Double ast;
+
+    @Column(name = "pk")
+    @DecimalMin(value = "0.0", message = "Penalty kicks cannot be negative")
     private Double pk;
+
+    @Column(name = "crdY")
+    @Min(value = 0, message = "Yellow cards cannot be negative")
     private Integer crdY;
+
+    @Column(name = "crdR")
+    @Min(value = 0, message = "Red cards cannot be negative")
     private Integer crdR;
+
+    @Column(name = "xG")
+    @DecimalMin(value = "0.0", message = "Expected goals cannot be negative")
     private Double xG;
+
+    @Column(name = "xAG")
+    @DecimalMin(value = "0.0", message = "Expected assists cannot be negative")
     private Double xAG;
+
+    @Column(name = "team", nullable = false)
+    @NotBlank(message = "Team cannot be blank")
+    @Size(max = 50)
     private String team;
 
-    public Player(String player, String nation, String pos, Integer age, Integer mp, Integer starts, Double min, Double gls, Double ast, Double pk, Integer crdY, Integer crdR, Double xG, Double xAG, String team) {
-        this.player = player;
-        this.nation = nation;
-        this.pos = pos;
-        this.age = age;
-        this.mp = mp;
-        this.starts = starts;
-        this.min = min;
-        this.gls = gls;
-        this.ast = ast;
-        this.pk = pk;
-        this.crdY = crdY;
-        this.crdR = crdR;
-        this.xG = xG;
-        this.xAG = xAG;
-        this.team = team;
+    @Column(name = "season")
+    @Pattern(regexp = "^\\d{4}-\\d{2}$", message = "Season must be in format YYYY-YY (e.g., 2024-25)")
+    @Builder.Default
+    private String season = "2024-25";
 
+    @Column(name = "is_active")
+    @Builder.Default
+    private boolean isActive = true;
+
+    @CreationTimestamp
+    @Column(name = "created_at", updatable = false)
+    private LocalDateTime createdAt;
+
+    @UpdateTimestamp
+    @Column(name = "updated_at")
+    private LocalDateTime updatedAt;
+
+    @Version
+    @Column(name = "version", nullable = false)
+    private Long version = 0L;
+
+    public double getGoalsPerMatch() {
+        return mp != null && mp > 0 ? (gls != null ? gls / mp : 0.0) : 0.0;
     }
 
-    public String getPlayer() {
-        return player;
+    public double getAssistsPerMatch() {
+        return mp != null && mp > 0 ? (ast != null ? ast / mp : 0.0) : 0.0;
     }
 
-    public void setPlayer(String player) {
-        this.player = player;
+    public double getMinutesPerMatch() {
+        return mp != null && mp > 0 ? (min != null ? min / mp : 0.0) : 0.0;
     }
 
-    public String getNation() {
-        return nation;
+    public boolean isRegularStarter() {
+        return mp != null && starts != null && mp > 0 &&
+                (starts.doubleValue() / mp) >= 0.7;
     }
 
-    public void setNation(String nation) {
-        this.nation = nation;
+    public double getGoalContribution() {
+        return (gls != null ? gls : 0.0) + (ast != null ? ast : 0.0);
     }
 
-    public String getPos() {
-        return pos;
-    }
-
-    public void setPos(String pos) {
-        this.pos = pos;
-    }
-
-    public Integer getAge() {
-        return age;
-    }
-
-    public void setAge(Integer age) {
-        this.age = age;
-    }
-
-    public Integer getMp() {
-        return mp;
-    }
-
-    public void setMp(Integer mp) {
-        this.mp = mp;
-    }
-
-    public Integer getStarts() {
-        return starts;
-    }
-
-    public void setStarts(Integer starts) {
-        this.starts = starts;
-    }
-
-    public Double getMin() {
-        return min;
-    }
-
-    public void setMin(Double min) {
-        this.min = min;
-    }
-
-    public Double getGls() {
-        return gls;
-    }
-
-    public void setGls(Double gls) {
-        this.gls = gls;
-    }
-
-    public Double getAst() {
-        return ast;
-    }
-
-    public void setAst(Double ast) {
-        this.ast = ast;
-    }
-
-    public Double getPk() {
-        return pk;
-    }
-
-    public void setPk(Double pk) {
-        this.pk = pk;
-    }
-
-    public Integer getCrdY() {
-        return crdY;
-    }
-
-    public void setCrdY(Integer crdY) {
-        this.crdY = crdY;
-    }
-
-    public Integer getCrdR() {
-        return crdR;
-    }
-
-    public void setCrdR(Integer crdR) {
-        this.crdR = crdR;
-    }
-
-    public Double getxG() {
-        return xG;
-    }
-
-    public void setxG(Double xG) {
-        this.xG = xG;
-    }
-
-    public Double getxAG() {
-        return xAG;
-    }
-
-    public void setxAG(Double xAG) {
-        this.xAG = xAG;
-    }
-
-    public String getTeam() {
-        return team;
-    }
-
-    public void setTeam(String team) {
-        this.team = team;
+    public boolean isPerformingAboveExpected() {
+        return gls != null && xG != null && gls > xG;
     }
 }
