@@ -62,8 +62,8 @@ public class PlayerService {
             playerToUpdate.setPk(updatedPlayer.getPk());
             playerToUpdate.setCrdY(updatedPlayer.getCrdY());
             playerToUpdate.setCrdR(updatedPlayer.getCrdR());
-            playerToUpdate.setxG(updatedPlayer.getxG());
-            playerToUpdate.setxAG(updatedPlayer.getxAG());
+            playerToUpdate.setXG(updatedPlayer.getXG());
+            playerToUpdate.setXAG(updatedPlayer.getXAG());
             playerToUpdate.setTeam((updatedPlayer.getTeam()));
 
             playerRepository.save(playerToUpdate);
