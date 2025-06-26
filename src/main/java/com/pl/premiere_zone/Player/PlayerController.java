@@ -1,5 +1,6 @@
 package com.pl.premiere_zone.Player;
 
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -7,6 +8,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.net.ResponseCache;
 import java.util.List;
+import java.util.UUID;
 
 @RestController
 @RequestMapping(path = "/api/player")
@@ -25,20 +27,22 @@ public class PlayerController {
             @RequestParam(required = false) String position,
             @RequestParam(required = false) String nation) {
         if (team != null && position != null) {
-            return playerService.getPlayersByTeamAndPos(team, position);
-        } else if (team != null) {
+            return playerService.getPlayersFromTeamAndPos(team, position);
+        }else if (name!=null){
+            return playerService.getPlayersByName(name);
+        }else if (team != null) {
             return playerService.getPlayersFromTeam(team);
         } else if (position != null) {
-            return playerService.getPlayersFromTeam(position);
+            return playerService.getPlayersFromPos(position);
         } else if (nation != null) {
-            return playerService.getPlayersFromTeam(nation);
+            return playerService.getPlayersFromNation(nation);
         } else {
             return playerService.getPlayers();
         }
     }
 
     @PostMapping
-    public ResponseEntity<Player> addPlayer(@RequestBody Player player){
+    public ResponseEntity<Player> addPlayer(@RequestBody @Valid Player player){
         Player createdPlayer = playerService.addPlayer(player);
         return new ResponseEntity<>(createdPlayer, HttpStatus.CREATED);
     }
@@ -57,5 +61,11 @@ public class PlayerController {
     public ResponseEntity<String> deletePlayer(@PathVariable String playerName){
         playerService.deletePlayer(playerName);
         return new ResponseEntity<>("Player deleted successfully",HttpStatus.OK);
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<String> deletePlayer(@PathVariable UUID id){
+        playerService.deletePlayer(id);
+        return new ResponseEntity<>("Player deleted successfullt",HttpStatus.OK);
     }
 }
