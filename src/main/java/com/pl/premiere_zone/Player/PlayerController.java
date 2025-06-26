@@ -57,7 +57,7 @@ public class PlayerController {
         }
     }
 
-    @DeleteMapping("/{playerName}")
+    @DeleteMapping("/name/{playerName}")
     public ResponseEntity<String> deletePlayer(@PathVariable String playerName){
         playerService.deletePlayer(playerName);
         return new ResponseEntity<>("Player deleted successfully",HttpStatus.OK);
