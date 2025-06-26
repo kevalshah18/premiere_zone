@@ -1,13 +1,17 @@
 package com.pl.premiere_zone.Player;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.beans.Transient;
 import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Component
@@ -18,9 +22,11 @@ public class PlayerService {
     public PlayerService(PlayerRepository playerRepository){
         this.playerRepository=playerRepository;
     }
+
     public List<Player> getPlayers(){
         return playerRepository.findAll();
     }
+
     public List<Player>getPlayersFromTeam(String teamName){
         return playerRepository.findAll().stream().filter(player->player.getTeam().equals(teamName)).collect(Collectors.toList());
     }
@@ -29,15 +35,15 @@ public class PlayerService {
                 .collect(Collectors.toList());
 
     }
-    public List<Player> getPlayersByPos(String pos){
+    public List<Player> getPlayersFromPos(String pos){
         return playerRepository.findAll().stream().filter(player-> player.getPos().equalsIgnoreCase(pos))
                 .collect(Collectors.toList());
     }
-    public List<Player> getPlayersByNation(String nation){
+    public List<Player> getPlayersFromNation(String nation){
         return playerRepository.findAll().stream().filter(player->player.getNation().equalsIgnoreCase(nation.toLowerCase()))
                 .collect(Collectors.toList());
     }
-    public List<Player> getPlayersByTeamAndPos(String nation,String pos ){
+    public List<Player> getPlayersFromTeamAndPos(String nation,String pos ){
         return playerRepository.findAll().stream().filter(player -> player.getNation().equalsIgnoreCase(nation) && player.getPos().equalsIgnoreCase(pos))
                 .collect(Collectors.toList());
     }
@@ -76,5 +82,13 @@ public class PlayerService {
     @Transactional
     public void deletePlayer(String name){
         playerRepository.deleteByPlayer(name);
+    }
+
+    @Transactional
+    public void deletePlayer(UUID id){
+        if(!playerRepository.existsById(id)){
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND,"No player with ID:"+id);
+        }
+        playerRepository.deleteById(id);
     }
 }
