@@ -1,15 +1,14 @@
-package com.pl.premiere_zone.Player;
+package com.pl.premiere_zone.player.service;
 
+import com.pl.premiere_zone.player.entity.Player;
+import com.pl.premiere_zone.player.repository.PlayerRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.HttpStatusCode;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
-import java.beans.Transient;
 import java.util.List;
-import java.util.Locale;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
