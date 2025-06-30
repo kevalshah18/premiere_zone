@@ -1,12 +1,13 @@
-package com.pl.premiere_zone.Player;
+package com.pl.premiere_zone.player.controller;
 
+import com.pl.premiere_zone.player.entity.Player;
+import com.pl.premiere_zone.player.service.PlayerService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.net.ResponseCache;
 import java.util.List;
 import java.util.UUID;
 
@@ -63,9 +64,9 @@ public class PlayerController {
         return new ResponseEntity<>("Player deleted successfully",HttpStatus.OK);
     }
 
-    @DeleteMapping("/{id}")
+    @DeleteMapping("/id/{id}")
     public ResponseEntity<String> deletePlayer(@PathVariable UUID id){
         playerService.deletePlayer(id);
-        return new ResponseEntity<>("Player deleted successfullt",HttpStatus.OK);
+        return new ResponseEntity<>("Player deleted successfully",HttpStatus.OK);
     }
 }

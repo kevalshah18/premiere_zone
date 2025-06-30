@@ -1,4 +1,4 @@
-package com.pl.premiere_zone.Player;
+package com.pl.premiere_zone.player.entity;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
