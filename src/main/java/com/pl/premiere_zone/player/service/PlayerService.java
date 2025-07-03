@@ -47,11 +47,10 @@ public class PlayerService {
                 .collect(Collectors.toList());
     }
     public Player addPlayer(Player player){
-        playerRepository.save(player);
-        return player;
+        return  playerRepository.save(player);
     }
     public Player updatePlayer(Player updatedPlayer){
-        Optional<Player> existingPlayer = playerRepository.findByPlayer(updatedPlayer.getPlayer());
+        Optional<Player> existingPlayer = playerRepository.findById(updatedPlayer.getId());
         if(existingPlayer.isPresent()){
             Player playerToUpdate = existingPlayer.get();
 
