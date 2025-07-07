@@ -5,7 +5,7 @@ import jakarta.validation.constraints.*;
 public record PlayerRequestDTO(
 
         @NotBlank(message = "Name is mandatory")
-        String name,
+        String player,
 
         @NotBlank(message = "Nation is mandatory")
         String nation,

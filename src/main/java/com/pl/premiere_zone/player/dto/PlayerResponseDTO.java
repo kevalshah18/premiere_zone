@@ -9,12 +9,11 @@ import java.util.UUID;
 @Builder
 public record PlayerResponseDTO(
         UUID id,
-        String name,
+        String player,
         String nation,
         String pos,
         String team,
-        int age,
-        Instant createdAt,
-        Instant updatedAt
+        int age
+
 ) {
 }

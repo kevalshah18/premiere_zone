@@ -58,33 +58,18 @@ public class PlayerService {
         return mapper.toDto(playerEntity);
     }
 
-    public Player updatePlayer(Player updatedPlayer) {
-        Optional<Player> existingPlayer = playerRepository.findById(updatedPlayer.getId());
-        if (existingPlayer.isPresent()) {
-            Player playerToUpdate = existingPlayer.get();
+    public PlayerResponseDTO updatePlayer(UUID id, PlayerRequestDTO updatedPlayer) {
+        Player existingPlayer = playerRepository.findById(id)
+                .orElseThrow(() -> new ResponseStatusException(
+                        HttpStatus.NOT_FOUND, "No player with ID " + id));
+        mapper.updateEntity(updatedPlayer, existingPlayer);
+        Player playerToUpdate = mapper.toEntity(updatedPlayer);
 
-            playerToUpdate.setPlayer((updatedPlayer.getPlayer()));
-            playerToUpdate.setNation((updatedPlayer.getNation()));
-            playerToUpdate.setPos((updatedPlayer.getPos()));
-            playerToUpdate.setAge(updatedPlayer.getAge());
-            playerToUpdate.setMp(updatedPlayer.getMp());
-            playerToUpdate.setStarts(updatedPlayer.getStarts());
-            playerToUpdate.setMin(updatedPlayer.getMin());
-            playerToUpdate.setGls(updatedPlayer.getGls());
-            playerToUpdate.setAst(updatedPlayer.getAst());
-            playerToUpdate.setPk(updatedPlayer.getPk());
-            playerToUpdate.setCrdY(updatedPlayer.getCrdY());
-            playerToUpdate.setCrdR(updatedPlayer.getCrdR());
-            playerToUpdate.setXG(updatedPlayer.getXG());
-            playerToUpdate.setXAG(updatedPlayer.getXAG());
-            playerToUpdate.setTeam((updatedPlayer.getTeam()));
 
-            playerRepository.save(playerToUpdate);
-            return playerToUpdate;
+        playerRepository.save(playerToUpdate);
+        return mapper.toDto(playerToUpdate);
 
-        } else {
-            return null;
-        }
+
     }
 
     @Transactional
