@@ -25,14 +25,13 @@ public class PlayerController {
     @GetMapping
     public List<PlayerResponseDTO> getPlayers(
             @RequestParam(required = false) String team,
-            @RequestParam(required = false) String name,
+            @RequestParam(required = false) String player,
             @RequestParam(required = false) String position,
             @RequestParam(required = false) String nation) {
-        System.out.println("==> getPlayers() endpoint hit");
         if (team != null && position != null) {
             return playerService.getPlayersFromTeamAndPos(team, position);
-        }else if (name!=null){
-            return playerService.getPlayersByName(name);
+        }else if (player!=null){
+            return playerService.getPlayersByName(player);
         }else if (team != null) {
             return playerService.getPlayersFromTeam(team);
         } else if (position != null) {
@@ -49,9 +48,9 @@ public class PlayerController {
         return new ResponseEntity<>(playerService.addPlayer(dto), HttpStatus.CREATED);
     }
 
-    @PutMapping
-    public ResponseEntity<Player> updatePlayer(@RequestBody Player player){
-        Player resultPlayer = playerService.updatePlayer(player);
+    @PutMapping("/{id}")
+    public ResponseEntity<PlayerResponseDTO> updatePlayer(@PathVariable UUID id ,@Valid@RequestBody PlayerRequestDTO player){
+        PlayerResponseDTO resultPlayer = playerService.updatePlayer(id,player);
         if(resultPlayer!=null){
             return new ResponseEntity<>(resultPlayer,HttpStatus.OK);
         }else{
