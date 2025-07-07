@@ -1,6 +1,9 @@
 package com.pl.premiere_zone.player.service;
 
+import com.pl.premiere_zone.player.dto.PlayerRequestDTO;
+import com.pl.premiere_zone.player.dto.PlayerResponseDTO;
 import com.pl.premiere_zone.player.entity.Player;
+import com.pl.premiere_zone.player.mapper.PlayerMapper;
 import com.pl.premiere_zone.player.repository.PlayerRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -16,42 +19,48 @@ import java.util.stream.Collectors;
 @Component
 public class PlayerService {
     private final PlayerRepository playerRepository;
+    private final PlayerMapper mapper;
 
     @Autowired
-    public PlayerService(PlayerRepository playerRepository){
-        this.playerRepository=playerRepository;
+    public PlayerService(PlayerRepository playerRepository, PlayerMapper mapper) {
+        this.playerRepository = playerRepository;
+        this.mapper = mapper;
     }
 
-    public List<Player> getPlayers(){
-        return playerRepository.findAll();
+    public List<PlayerResponseDTO> getPlayers() {
+        return playerRepository.findAll().stream().map(mapper::toDto).collect(Collectors.toList());
     }
 
-    public List<Player>getPlayersFromTeam(String teamName){
-        return playerRepository.findAll().stream().filter(player->player.getTeam().equals(teamName)).collect(Collectors.toList());
+    public List<PlayerResponseDTO> getPlayersFromTeam(String teamName) {
+        return playerRepository.findAll().stream().filter(player -> player.getTeam().equals(teamName)).map(mapper::toDto).collect(Collectors.toList());
     }
-    public List<Player>getPlayersByName(String name){
-        return playerRepository.findAll().stream().filter(player -> player.getPlayer().toLowerCase().contains(name.toLowerCase()))
-                .collect(Collectors.toList());
+
+    public List<PlayerResponseDTO> getPlayersByName(String name) {
+        return playerRepository.findAll().stream().filter(player -> player.getPlayer().toLowerCase().contains(name.toLowerCase())).map(mapper::toDto).collect(Collectors.toList());
 
     }
-    public List<Player> getPlayersFromPos(String pos){
-        return playerRepository.findAll().stream().filter(player-> player.getPos().equalsIgnoreCase(pos))
-                .collect(Collectors.toList());
+
+    public List<PlayerResponseDTO> getPlayersFromPos(String pos) {
+        return playerRepository.findAll().stream().filter(player -> player.getPos().equalsIgnoreCase(pos)).map(mapper::toDto).collect(Collectors.toList());
     }
-    public List<Player> getPlayersFromNation(String nation){
-        return playerRepository.findAll().stream().filter(player->player.getNation().equalsIgnoreCase(nation.toLowerCase()))
-                .collect(Collectors.toList());
+
+    public List<PlayerResponseDTO> getPlayersFromNation(String nation) {
+        return playerRepository.findAll().stream().filter(player -> player.getNation().equalsIgnoreCase(nation.toLowerCase())).map(mapper::toDto).collect(Collectors.toList());
     }
-    public List<Player> getPlayersFromTeamAndPos(String nation,String pos ){
-        return playerRepository.findAll().stream().filter(player -> player.getNation().equalsIgnoreCase(nation) && player.getPos().equalsIgnoreCase(pos))
-                .collect(Collectors.toList());
+
+    public List<PlayerResponseDTO> getPlayersFromTeamAndPos(String nation, String pos) {
+        return playerRepository.findAll().stream().filter(player -> player.getNation().equalsIgnoreCase(nation) && player.getPos().equalsIgnoreCase(pos)).map(mapper::toDto).collect(Collectors.toList());
     }
-    public Player addPlayer(Player player){
-        return  playerRepository.save(player);
+
+    public PlayerResponseDTO addPlayer(PlayerRequestDTO player) {
+        Player playerEntity = mapper.toEntity(player);
+        playerRepository.save(playerEntity);
+        return mapper.toDto(playerEntity);
     }
-    public Player updatePlayer(Player updatedPlayer){
+
+    public Player updatePlayer(Player updatedPlayer) {
         Optional<Player> existingPlayer = playerRepository.findById(updatedPlayer.getId());
-        if(existingPlayer.isPresent()){
+        if (existingPlayer.isPresent()) {
             Player playerToUpdate = existingPlayer.get();
 
             playerToUpdate.setPlayer((updatedPlayer.getPlayer()));
@@ -73,19 +82,20 @@ public class PlayerService {
             playerRepository.save(playerToUpdate);
             return playerToUpdate;
 
-        }else{
+        } else {
             return null;
         }
     }
+
     @Transactional
-    public void deletePlayer(String name){
+    public void deletePlayer(String name) {
         playerRepository.deleteByPlayer(name);
     }
 
     @Transactional
-    public void deletePlayer(UUID id){
-        if(!playerRepository.existsById(id)){
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND,"No player with ID:"+id);
+    public void deletePlayer(UUID id) {
+        if (!playerRepository.existsById(id)) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "No player with ID:" + id);
         }
         playerRepository.deleteById(id);
     }

@@ -1,5 +1,6 @@
 package com.pl.premiere_zone.player.controller;
 
+import com.pl.premiere_zone.player.dto.*;
 import com.pl.premiere_zone.player.entity.Player;
 import com.pl.premiere_zone.player.service.PlayerService;
 import jakarta.validation.Valid;
@@ -22,11 +23,12 @@ public class PlayerController {
     }
 
     @GetMapping
-    public List<Player> getPlayers(
+    public List<PlayerResponseDTO> getPlayers(
             @RequestParam(required = false) String team,
             @RequestParam(required = false) String name,
             @RequestParam(required = false) String position,
             @RequestParam(required = false) String nation) {
+        System.out.println("==> getPlayers() endpoint hit");
         if (team != null && position != null) {
             return playerService.getPlayersFromTeamAndPos(team, position);
         }else if (name!=null){
@@ -43,9 +45,8 @@ public class PlayerController {
     }
 
     @PostMapping
-    public ResponseEntity<Player> addPlayer(@RequestBody @Valid Player player){
-        Player createdPlayer = playerService.addPlayer(player);
-        return new ResponseEntity<>(createdPlayer, HttpStatus.CREATED);
+    public ResponseEntity<PlayerResponseDTO> addPlayer(@RequestBody @Valid PlayerRequestDTO dto){
+        return new ResponseEntity<>(playerService.addPlayer(dto), HttpStatus.CREATED);
     }
 
     @PutMapping
